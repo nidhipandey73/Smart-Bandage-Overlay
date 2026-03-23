@@ -194,6 +194,7 @@ with left_col:
     st.subheader("📤 Upload")
 
     uploaded_file = st.file_uploader(
+        "Upload wound image",
         type=["jpg", "png", "jpeg"]
     )
 
