@@ -94,7 +94,7 @@ def smart_bandage_overlay(geometry, bandage_path):
     if bandage.shape[2] == 3:
         bandage = cv2.cvtColor(bandage, cv2.COLOR_BGR2RGB)
     elif bandage.shape[2] == 4:
-        bandage[:, :, :3] = cv2.cvtColor(bandage[:, :, :3], cv2.COLOR_BGR2RGB
+        bandage[:, :, :3] = cv2.cvtColor(bandage[:, :, :3], cv2.COLOR_BGR2RGB)
     if bandage is None:
         return None
 
