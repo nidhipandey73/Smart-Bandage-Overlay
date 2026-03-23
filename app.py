@@ -170,8 +170,15 @@ def smart_bandage_overlay(geometry, bandage_path):
 # -------------------------------
 # Streamlit UI
 # -------------------------------
-st.title("🩹 Smart AI Bandage System")
-st.markdown("### Automated wound detection & adaptive bandage placement")
+st.markdown(
+    "<h1 style='text-align: center;'>🩹 Smart AI Bandage System</h1>",
+    unsafe_allow_html=True
+)
+
+st.markdown(
+    "<h4 style='text-align: center;'>Automated wound detection & adaptive bandage placement</h4>",
+    unsafe_allow_html=True
+)
 
 tab1, tab2 = st.tabs(["📤 Upload", "🩹 Result"])
 
