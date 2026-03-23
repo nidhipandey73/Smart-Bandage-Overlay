@@ -35,14 +35,6 @@ def load_model():
 
 model = load_model()
 
-st.sidebar.title("🩹 Settings")
-st.sidebar.markdown("Upload an image and apply AI bandage.")
-
-st.sidebar.markdown("### About")
-st.sidebar.info(
-    "This app detects wounds using YOLOv8 segmentation "
-    "and applies adaptive bandages using geometric analysis."
-)
 
 # -------------------------------
 # Geometry Extraction (MODIFIED for numpy input)
