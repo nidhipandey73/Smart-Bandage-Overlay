@@ -6,6 +6,26 @@ import cv2
 from ultralytics import YOLO
 from PIL import Image
 
+
+st.set_page_config(
+    page_title="Smart Bandage AI",
+    page_icon="🩹",
+    layout="centered"
+)
+
+# Center UI
+st.markdown("""
+<style>
+.block-container {
+    max-width: 900px;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    margin: auto;
+}
+</style>
+""", unsafe_allow_html=True)
+
+
 # -------------------------------
 # Load Model
 # -------------------------------
@@ -14,6 +34,15 @@ def load_model():
     return YOLO("best.pt")
 
 model = load_model()
+
+st.sidebar.title("🩹 Settings")
+st.sidebar.markdown("Upload an image and apply AI bandage.")
+
+st.sidebar.markdown("### About")
+st.sidebar.info(
+    "This app detects wounds using YOLOv8 segmentation "
+    "and applies adaptive bandages using geometric analysis."
+)
 
 # -------------------------------
 # Geometry Extraction (MODIFIED for numpy input)
@@ -150,28 +179,62 @@ def smart_bandage_overlay(geometry, bandage_path):
 # Streamlit UI
 # -------------------------------
 st.title("🩹 Smart AI Bandage System")
+st.markdown("### Automated wound detection & adaptive bandage placement")
 
-uploaded_file = st.file_uploader("Upload wound image", type=["jpg", "png", "jpeg"])
+tab1, tab2 = st.tabs(["📤 Upload", "🩹 Result"])
 
-if uploaded_file:
-    image = Image.open(uploaded_file).convert("RGB")
-    image_np = np.array(image)
+# -------------------------------
+# TAB 1: Upload
+# -------------------------------
+with tab1:
+    uploaded_file = st.file_uploader(
+        "Upload wound image",
+        type=["jpg", "png", "jpeg"]
+    )
 
-    st.image(image, caption="Original Image", use_container_width=True)
+    if uploaded_file:
+        image = Image.open(uploaded_file).convert("RGB")
+        image_np = np.array(image)
 
-    if st.button("Apply Bandage"):
+        st.image(image, caption="Uploaded Image", use_container_width=True)
 
-        with st.spinner("Processing..."):
+        if st.button("Apply Bandage"):
+            with st.spinner("Processing..."):
 
-            geometry = extract_wound_geometry(model, image_np)
+                geometry = extract_wound_geometry(model, image_np)
 
-            if geometry is None:
-                st.warning("No wounds detected.")
-            else:
-                output = smart_bandage_overlay(geometry, "bandage.png")
-
-                if output is not None:
-                    st.image(output, caption="Bandaged Output", use_container_width=True)
+                if geometry is None:
+                    st.warning("No wounds detected.")
                 else:
-                    st.error("Error applying bandage.")
+                    output = smart_bandage_overlay(geometry, "bandage.png")
 
+                    # Save result in session
+                    st.session_state["output"] = output
+                    st.session_state["input"] = image_np
+
+                    st.success("Bandage applied! Check Result tab.")
+
+# -------------------------------
+# TAB 2: Result
+# -------------------------------
+with tab2:
+    if "output" in st.session_state:
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.image(
+                st.session_state["input"],
+                caption="Original",
+                use_container_width=True
+            )
+
+        with col2:
+            st.image(
+                st.session_state["output"],
+                caption="Bandaged",
+                use_container_width=True
+            )
+
+    else:
+        st.info("Upload and process an image first.")
