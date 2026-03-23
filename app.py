@@ -180,12 +180,19 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-tab1, tab2 = st.tabs(["📤 Upload", "🩹 Result"])
+st.markdown("<br>", unsafe_allow_html=True)
 
 # -------------------------------
-# TAB 1: Upload
+# Two Column Layout
 # -------------------------------
-with tab1:
+left_col, right_col = st.columns([1, 1])
+
+# -------------------------------
+# LEFT: Upload Section
+# -------------------------------
+with left_col:
+    st.subheader("📤 Upload")
+
     uploaded_file = st.file_uploader(
         "Upload wound image",
         type=["jpg", "png", "jpeg"]
@@ -211,12 +218,13 @@ with tab1:
                     st.session_state["output"] = output
                     st.session_state["input"] = image_np
 
-                    st.success("Bandage applied! Check Result tab.")
 
 # -------------------------------
-# TAB 2: Result
+# RIGHT: Result Section
 # -------------------------------
-with tab2:
+with right_col:
+    st.subheader("🩹 Result")
+
     if "output" in st.session_state:
 
         col1, col2 = st.columns(2)
@@ -236,4 +244,4 @@ with tab2:
             )
 
     else:
-        st.info("Upload and process an image first.")
+        st.info("Upload and process an image to see result.")
