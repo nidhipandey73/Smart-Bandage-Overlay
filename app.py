@@ -213,6 +213,7 @@ st.markdown("""
         display: flex;              
         align-items: center;       
         justify-content: center;
+        margin-bottom: 1.5rem;
     }
 
     div.stButton > button {
