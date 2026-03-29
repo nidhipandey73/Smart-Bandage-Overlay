@@ -176,47 +176,61 @@ def smart_bandage_overlay(geometry, bandage_path):
 st.set_page_config(page_title="Smart AI Bandage System", layout="wide")
 
 # -------------------------------
-# Custom CSS for Alignment
+# Custom CSS
 # -------------------------------
 st.markdown("""
     <style>
-    /* Reduce extra top padding */
     .block-container {
         padding-top: 2rem;
+        padding-left: 3rem;
+        padding-right: 3rem;
     }
 
-    /* Make both columns visually aligned */
-    .section-card {
-        background-color: #ffffff;
-        padding: 20px;
-        border-radius: 18px;
-        box-shadow: 0 4px 14px rgba(0,0,0,0.06);
-        min-height: 520px;
-    }
-
-    /* Align subheaders properly */
-    .section-title {
-        font-size: 32px;
+    .section-heading {
+        font-size: 2rem;
         font-weight: 700;
-        margin-bottom: 20px;
+        margin-bottom: 1rem;
         display: flex;
         align-items: center;
         gap: 10px;
     }
 
-    /* Optional: make uploader look cleaner */
-    [data-testid="stFileUploader"] {
+    .filename-box {
+        background-color: #f5f7fb;
+        padding: 12px 16px;
+        border-radius: 12px;
+        font-size: 16px;
+        color: #333;
         margin-top: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #e0e6ef;
     }
 
-    /* Result placeholder styling */
-    .result-placeholder {
-        background-color: #eaf3ff;
-        padding: 18px;
+    .empty-result-box {
+        background-color: #f8fbff;
+        padding: 22px;
         border-radius: 14px;
-        font-size: 18px;
-        color: #0b5cab;
-        margin-top: 10px;
+        border: 1px dashed #b8d4f5;
+        color: #4b6b8a;
+        font-size: 17px;
+        text-align: center;
+        margin-top: 0.5rem;
+    }
+
+    img {
+        border-radius: 14px;
+    }
+
+    [data-testid="stFileUploader"] {
+        margin-top: 0.5rem;
+    }
+
+    div.stButton > button {
+        width: 100%;
+        border-radius: 12px;
+        height: 3rem;
+        font-size: 16px;
+        font-weight: 600;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -241,9 +255,12 @@ st.markdown("<br>", unsafe_allow_html=True)
 # -------------------------------
 left_col, right_col = st.columns([1, 1], gap="large")
 
+# -------------------------------
+# LEFT: Upload Section
+# -------------------------------
 with left_col:
     with st.container(border=True):
-        st.markdown("### 📤 Upload")
+        st.markdown('<div class="section-heading">📤 Upload</div>', unsafe_allow_html=True)
 
         uploaded_file = st.file_uploader(
             "Upload wound image",
@@ -254,10 +271,19 @@ with left_col:
             image = Image.open(uploaded_file).convert("RGB")
             image_np = np.array(image)
 
-            st.image(image, caption="Uploaded Image", use_container_width=True)
+            # Store input immediately so result section can use it later
+            st.session_state["input"] = image_np
+            st.session_state["filename"] = uploaded_file.name
+
+            # Show ONLY file name, not preview image
+            st.markdown(
+                f'<div class="filename-box">📄 <b>Selected File:</b> {uploaded_file.name}</div>',
+                unsafe_allow_html=True
+            )
 
             if st.button("Apply Bandage"):
                 with st.spinner("Processing..."):
+
                     geometry = extract_wound_geometry(model, image_np)
 
                     if geometry is None:
@@ -265,22 +291,33 @@ with left_col:
                     else:
                         output = smart_bandage_overlay(geometry, "bandage.png")
                         st.session_state["output"] = output
-                        st.session_state["input"] = image_np
 
+# -------------------------------
+# RIGHT: Result Section
+# -------------------------------
 with right_col:
     with st.container(border=True):
-        st.markdown("### 🩹 Result")
+        st.markdown('<div class="section-heading">🩹 Result</div>', unsafe_allow_html=True)
 
-        if uploaded_file is None:
-            st.markdown("<div style='height: 72px;'></div>", unsafe_allow_html=True)
-
-        if "output" in st.session_state:
+        if "output" in st.session_state and "input" in st.session_state:
             col1, col2 = st.columns(2)
 
             with col1:
-                st.image(st.session_state["input"], caption="Original", use_container_width=True)
+                st.image(
+                    st.session_state["input"],
+                    caption="Original",
+                    use_container_width=True
+                )
 
             with col2:
-                st.image(st.session_state["output"], caption="Bandaged", use_container_width=True)
+                st.image(
+                    st.session_state["output"],
+                    caption="Bandaged",
+                    use_container_width=True
+                )
+
         else:
-            st.info("Upload and process an image to see result.")
+            st.markdown(
+                '<div class="empty-result-box">Upload an image and click <b>Apply Bandage</b> to see the result.</div>',
+                unsafe_allow_html=True
+            )
