@@ -170,6 +170,60 @@ def smart_bandage_overlay(geometry, bandage_path):
 # -------------------------------
 # Streamlit UI
 # -------------------------------
+# -------------------------------
+# Page Config
+# -------------------------------
+st.set_page_config(page_title="Smart AI Bandage System", layout="wide")
+
+# -------------------------------
+# Custom CSS for Alignment
+# -------------------------------
+st.markdown("""
+    <style>
+    /* Reduce extra top padding */
+    .block-container {
+        padding-top: 2rem;
+    }
+
+    /* Make both columns visually aligned */
+    .section-card {
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 18px;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+        min-height: 520px;
+    }
+
+    /* Align subheaders properly */
+    .section-title {
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    /* Optional: make uploader look cleaner */
+    [data-testid="stFileUploader"] {
+        margin-top: 10px;
+    }
+
+    /* Result placeholder styling */
+    .result-placeholder {
+        background-color: #eaf3ff;
+        padding: 18px;
+        border-radius: 14px;
+        font-size: 18px;
+        color: #0b5cab;
+        margin-top: 10px;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+# -------------------------------
+# Header
+# -------------------------------
 st.markdown(
     "<h1 style='text-align: center;'>🩹 Smart AI Bandage System</h1>",
     unsafe_allow_html=True
@@ -185,13 +239,14 @@ st.markdown("<br>", unsafe_allow_html=True)
 # -------------------------------
 # Two Column Layout
 # -------------------------------
-left_col, right_col = st.columns([1, 1])
+left_col, right_col = st.columns([1, 1], gap="large")
 
 # -------------------------------
 # LEFT: Upload Section
 # -------------------------------
 with left_col:
-    st.subheader("📤 Upload")
+    st.markdown('<div class="section-card">', unsafe_allow_html=True)
+    st.markdown('<div class="section-title">📤 Upload</div>', unsafe_allow_html=True)
 
     uploaded_file = st.file_uploader(
         "Upload wound image",
@@ -214,19 +269,19 @@ with left_col:
                 else:
                     output = smart_bandage_overlay(geometry, "bandage.png")
 
-                    # Save result in session
                     st.session_state["output"] = output
                     st.session_state["input"] = image_np
 
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # -------------------------------
 # RIGHT: Result Section
 # -------------------------------
 with right_col:
-    st.subheader("🩹 Result")
+    st.markdown('<div class="section-card">', unsafe_allow_html=True)
+    st.markdown('<div class="section-title">🩹 Result</div>', unsafe_allow_html=True)
 
     if "output" in st.session_state:
-
         col1, col2 = st.columns(2)
 
         with col1:
@@ -242,6 +297,10 @@ with right_col:
                 caption="Bandaged",
                 use_container_width=True
             )
-
     else:
-        st.info("Upload and process an image to see result.")
+        st.markdown(
+            '<div class="result-placeholder">Upload and process an image to see result.</div>',
+            unsafe_allow_html=True
+        )
+
+    st.markdown('</div>', unsafe_allow_html=True)
