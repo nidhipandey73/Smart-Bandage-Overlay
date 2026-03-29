@@ -209,7 +209,7 @@ st.markdown("""
         font-size: 17px;
         text-align: center;
         margin-top: 0.5rem;
-        min-height: 150px;          
+        min-height: 170px;          
         display: flex;              
         align-items: center;       
         justify-content: center;
