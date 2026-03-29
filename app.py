@@ -209,6 +209,10 @@ st.markdown("""
         font-size: 17px;
         text-align: center;
         margin-top: 0.5rem;
+        min-height: 250px;          
+        display: flex;              
+        align-items: center;       
+        justify-content: center;
     }
 
     div.stButton > button {
