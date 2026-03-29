@@ -241,66 +241,46 @@ st.markdown("<br>", unsafe_allow_html=True)
 # -------------------------------
 left_col, right_col = st.columns([1, 1], gap="large")
 
-# -------------------------------
-# LEFT: Upload Section
-# -------------------------------
 with left_col:
-    st.markdown('<div class="section-card">', unsafe_allow_html=True)
-    st.markdown('<div class="section-title">📤 Upload</div>', unsafe_allow_html=True)
+    with st.container(border=True):
+        st.markdown("### 📤 Upload")
 
-    uploaded_file = st.file_uploader(
-        "Upload wound image",
-        type=["jpg", "png", "jpeg"]
-    )
-
-    if uploaded_file:
-        image = Image.open(uploaded_file).convert("RGB")
-        image_np = np.array(image)
-
-        st.image(image, caption="Uploaded Image", use_container_width=True)
-
-        if st.button("Apply Bandage"):
-            with st.spinner("Processing..."):
-
-                geometry = extract_wound_geometry(model, image_np)
-
-                if geometry is None:
-                    st.warning("No wounds detected.")
-                else:
-                    output = smart_bandage_overlay(geometry, "bandage.png")
-
-                    st.session_state["output"] = output
-                    st.session_state["input"] = image_np
-
-    st.markdown('</div>', unsafe_allow_html=True)
-
-# -------------------------------
-# RIGHT: Result Section
-# -------------------------------
-with right_col:
-    st.markdown('<div class="section-card">', unsafe_allow_html=True)
-    st.markdown('<div class="section-title">🩹 Result</div>', unsafe_allow_html=True)
-
-    if "output" in st.session_state:
-        col1, col2 = st.columns(2)
-
-        with col1:
-            st.image(
-                st.session_state["input"],
-                caption="Original",
-                use_container_width=True
-            )
-
-        with col2:
-            st.image(
-                st.session_state["output"],
-                caption="Bandaged",
-                use_container_width=True
-            )
-    else:
-        st.markdown(
-            '<div class="result-placeholder">Upload and process an image to see result.</div>',
-            unsafe_allow_html=True
+        uploaded_file = st.file_uploader(
+            "Upload wound image",
+            type=["jpg", "png", "jpeg"]
         )
 
-    st.markdown('</div>', unsafe_allow_html=True)
+        if uploaded_file:
+            image = Image.open(uploaded_file).convert("RGB")
+            image_np = np.array(image)
+
+            st.image(image, caption="Uploaded Image", use_container_width=True)
+
+            if st.button("Apply Bandage"):
+                with st.spinner("Processing..."):
+                    geometry = extract_wound_geometry(model, image_np)
+
+                    if geometry is None:
+                        st.warning("No wounds detected.")
+                    else:
+                        output = smart_bandage_overlay(geometry, "bandage.png")
+                        st.session_state["output"] = output
+                        st.session_state["input"] = image_np
+
+with right_col:
+    with st.container(border=True):
+        st.markdown("### 🩹 Result")
+
+        if uploaded_file is None:
+            st.markdown("<div style='height: 72px;'></div>", unsafe_allow_html=True)
+
+        if "output" in st.session_state:
+            col1, col2 = st.columns(2)
+
+            with col1:
+                st.image(st.session_state["input"], caption="Original", use_container_width=True)
+
+            with col2:
+                st.image(st.session_state["output"], caption="Bandaged", use_container_width=True)
+        else:
+            st.info("Upload and process an image to see result.")
