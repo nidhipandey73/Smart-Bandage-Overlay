@@ -214,6 +214,8 @@ st.markdown("""
         align-items: center;       
         justify-content: center;
         margin-bottom: 1rem;
+        line-height: 1.6;       
+        word-break: keep-all; 
     }
 
     div.stButton > button {
@@ -294,7 +296,5 @@ with right_col:
             with col2:
                 st.image(st.session_state["output"], caption="Bandaged", use_container_width=True)
         else:
-            st.markdown(
-                '<div class="empty-result-box">Upload an image and click <b>Apply Bandage</b> to see the result.</div>',
-                unsafe_allow_html=True
-            )
+            st.markdown('<div class="empty-result-box">Upload an image and click <b>Apply Bandage</b> to see the result.</div>',
+            unsafe_allow_html=True)
